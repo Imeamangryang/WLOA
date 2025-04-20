@@ -59,8 +59,8 @@ class _SurveyPageState extends State<SurveyPage> {
                   task: task,
                   showProgress: true,
                   localizations: const <String, String>{
-                    'cancel': 'Cancel',
-                    'next': 'Next',
+                    'cancel': '',
+                    'next': '다음',
                   },
                   themeData: Theme.of(context).copyWith(
                     primaryColor: Colors.cyan,

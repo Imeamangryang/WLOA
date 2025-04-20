@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loapetition/constants/lostarkdata.dart';
+import 'package:loapetition/constants/nav_items.dart';
 import 'package:loapetition/pages/class/classsurveypage.dart';
 import 'package:loapetition/widgets/layout.dart';
 
@@ -22,6 +24,7 @@ class _classmainPageState extends State<classmainPage> {
   String _characterName = '';
   dynamic _data = '';
   List<Map<String, dynamic>> _characters = [];
+  int _hoveredIndex = -1; // Track the hovered index
 
   Future<void> fetchCharacterInfo() async {
     final apiUrl = 'https://developer-lostark.game.onstove.com/characters/$_characterName/siblings';
@@ -37,6 +40,11 @@ class _classmainPageState extends State<classmainPage> {
         final data = jsonDecode(response.body) as List<dynamic>; // Cast to List<dynamic>
         setState(() {
           _characters = data.cast<Map<String, dynamic>>(); // Convert to List<Map<String, dynamic>>
+          _characters.sort((a, b) {
+            final levelA = double.tryParse(a['ItemMaxLevel'].replaceAll(',', '')) ?? 0;
+            final levelB = double.tryParse(b['ItemMaxLevel'].replaceAll(',', '')) ?? 0;
+            return levelB.compareTo(levelA); // Sort in descending order
+          });
           _data = '존재하지 않는 닉네임입니다.';
         });
       } else {
@@ -162,44 +170,128 @@ class _classmainPageState extends State<classmainPage> {
                         final itemMaxLevel =
                             double.tryParse(character['ItemMaxLevel'].replaceAll(',', '')) ?? 0;
                         if (itemMaxLevel >= 1640) {
-                          return Container(
-                            padding: const EdgeInsets.all(8.0),
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 4.0, horizontal: 16.0), // Added horizontal margin
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(8.0),
+                          return ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.zero, // Remove default padding
+                              backgroundColor: Colors.transparent, // Make the button transparent
+                              shadowColor: Colors.transparent, // Remove button shadow
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    15), // Match the container's border radius
+                              ),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            onPressed: () {
+                              // Navigate to the survey page
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SurveyPage(
+                                    className: character['CharacterClassName'].toString(),
+                                    characterName: character['CharacterName'].toString(),
+                                  ),
+                                  settings: RouteSettings(
+                                    name: '/${character['CharacterClassName']}',
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Stack(
                               children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: Text(
-                                      '${character['ServerName']} - ${character['CharacterName']} - ${character['CharacterClassName']} - ${itemMaxLevel.toInt()}',
-                                      style: const TextStyle(fontSize: 16),
+                                // Background Text
+                                Positioned.fill(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: AnimatedOpacity(
+                                      duration: const Duration(milliseconds: 100),
+                                      opacity: _hoveredIndex == index ? 1.0 : 0.0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(right: 20),
+                                        child: Container(
+                                          alignment: Alignment.centerRight,
+                                          height: MediaQuery.of(context).size.width * 0.2,
+                                          width: MediaQuery.of(context).size.width *
+                                              0.6, // Adjust width to fit image
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 5, horizontal: 10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent, // Light grey background
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: const Text(
+                                            '평가하기',
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => SurveyPage(
-                                            className: character['CharacterClassName'].toString(),
-                                            characterName: character['CharacterName'].toString(),
-                                          ),
-                                          settings: RouteSettings(
-                                            name: '/${character['CharacterClassName']}',
+                                // Hoverable Container
+                                MouseRegion(
+                                  onEnter: (_) {
+                                    setState(() {
+                                      _hoveredIndex = index;
+                                    });
+                                  },
+                                  onExit: (_) {
+                                    setState(() {
+                                      _hoveredIndex = -1;
+                                    });
+                                  },
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 100),
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                    height: MediaQuery.of(context).size.width * 0.2,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.6, // Adjust width to fit image
+                                    transform: _hoveredIndex == index
+                                        ? Matrix4.translationValues(
+                                            -100, 0, 0) // Shift left on hover
+                                        : Matrix4.identity(),
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                            'images/class${classindex[character['CharacterClassName']]}.jpg'),
+                                        fit: BoxFit.cover,
+                                        alignment:
+                                            Alignment.topCenter, // Align the image to the top
+                                      ),
+                                      borderRadius: BorderRadius.circular(15),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 5),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Positioned.fill(
+                                          child: Container(
+                                            alignment: Alignment.topLeft,
+                                            decoration: BoxDecoration(
+                                              color: Colors.transparent,
+                                              borderRadius: BorderRadius.circular(15),
+                                            ),
+                                            child: Text(
+                                              ' 서버 : ${character['ServerName']} \n 닉네임 : ${character['CharacterName']} \n 직업 : ${character['CharacterClassName']} \n 레벨 : ${itemMaxLevel.toInt()}',
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                              textAlign: TextAlign.left,
+                                            ),
                                           ),
                                         ),
-                                      );
-                                    },
-                                    child: const Text('설문 참여'),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],

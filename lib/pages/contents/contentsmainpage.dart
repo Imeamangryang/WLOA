@@ -1,6 +1,5 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:loapetition/constants/NPC_dialog.dart';
+import 'package:loapetition/constants/nav_items.dart';
 import 'package:loapetition/widgets/layout.dart';
 
 class ContentsmainPage extends StatefulWidget {
@@ -11,106 +10,102 @@ class ContentsmainPage extends StatefulWidget {
 }
 
 class _ContentsmainPageState extends State<ContentsmainPage> {
-  int dialogindex = 0;
-
-  void _showNicknameDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Enter your nickname'),
-          content: TextField(
-            onSubmitted: (String value) {
-              Navigator.of(context).pop();
-            },
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
+  int _hoveredIndex = -1; // Track the hovered index
   @override
   Widget build(BuildContext context) {
     return CustomLayout(
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'images/Bg_RaidMain.jpg',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned(
-            left: -MediaQuery.of(context).size.width * 0.25,
-            top: MediaQuery.of(context).size.height * 0.3,
-            child: Image.asset(
-              'images/NPC2.png',
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: MediaQuery.of(context).size.height * 0.7,
-            ),
-          ),
-          Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.7),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: DefaultTextStyle(
-                      style: const TextStyle(
-                        fontSize: 24.0,
-                        color: Colors.white,
-                      ),
-                      child: AnimatedTextKit(
-                        isRepeatingAnimation: false,
-                        key: ValueKey<int>(dialogindex),
-                        animatedTexts: [
-                          TyperAnimatedText(NPC_dialog[dialogindex]),
-                        ],
-                        onTap: () {
-                          setState(() {
-                            if (dialogindex < NPC_dialog.length - 1) {
-                              dialogindex++;
-                            } else {
-                              _showNicknameDialog(context);
-                            }
-                          });
-                        },
+      child: SingleChildScrollView(
+          child: Center(
+        child: Column(
+          children: List.generate(3, (index) {
+            return ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero, // Remove default padding
+                backgroundColor: Colors.transparent, // Make the button transparent
+                shadowColor: Colors.transparent, // Remove button shadow
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15), // Match the container's border radius
+                ),
+              ),
+              onPressed: () {
+                // Navigate to the survey page
+                Navigator.pushNamed(context, '/${navItems[0]}');
+              },
+              child: Stack(
+                children: [
+                  // Background Text
+                  Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 100),
+                        opacity: _hoveredIndex == index ? 1.0 : 0.0,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 20),
+                          child: Container(
+                            alignment: Alignment.centerRight,
+                            height: MediaQuery.of(context).size.width * 0.3,
+                            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent, // Light grey background
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Text(
+                              '평가하기',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward, color: Colors.white),
-                  onPressed: () {
-                    setState(() {
-                      if (dialogindex < NPC_dialog.length - 1) {
-                        dialogindex++;
-                      } else {
-                        _showNicknameDialog(context);
-                      }
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+                  // Hoverable Container
+                  MouseRegion(
+                    onEnter: (_) {
+                      setState(() {
+                        _hoveredIndex = index;
+                      });
+                    },
+                    onExit: (_) {
+                      setState(() {
+                        _hoveredIndex = -1;
+                      });
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 100),
+                      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      height: MediaQuery.of(context).size.width * 0.2,
+                      width: MediaQuery.of(context).size.width * 0.7, // Adjust width to fit image
+                      transform: _hoveredIndex == index
+                          ? Matrix4.translationValues(-100, 0, 0) // Shift left on hover
+                          : Matrix4.identity(),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('images/raid$index.jpg'),
+                          fit: BoxFit.cover,
+                          alignment: Alignment.topCenter, // Align the image to the top
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
+      )),
     );
   }
 }
