@@ -39,13 +39,13 @@ class _HomePageState extends State<HomePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '★아말론 스타 평가★',
+                        '★아말론 스타 가이드★',
                         style: GoogleFonts.nanumBrushScript(
                             fontSize: 40, fontWeight: FontWeight.w900, color: Colors.black),
                         textAlign: TextAlign.center,
                       ),
                       Text(
-                        '유저에, 유저에 의한, 유저를 위한 로스트아크 설문 조사',
+                        '유저에, 유저에 의한, 유저를 위한 로스트아크 외부 지표',
                         style: GoogleFonts.nanumBrushScript(
                             fontSize: 20, fontWeight: FontWeight.w900, color: Colors.black),
                         textAlign: TextAlign.justify,

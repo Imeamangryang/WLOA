@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loapetition/constants/lostarkdata.dart';
-import 'package:loapetition/constants/nav_items.dart';
 import 'package:loapetition/pages/class/classsurveypage.dart';
 import 'package:loapetition/widgets/layout.dart';
 
@@ -82,7 +81,7 @@ class _classmainPageState extends State<classmainPage> {
                       },
                       blendMode: BlendMode.dstIn,
                       child: Image.asset(
-                        'images/LOSTARK_wallpaper_3440x1440_Season3.jpg',
+                        'images/LOSTARK_wallpaper_3440x1440_Limlake.jpg',
                         filterQuality: FilterQuality.high,
                       )),
                   Center(
@@ -105,17 +104,26 @@ class _classmainPageState extends State<classmainPage> {
                                     style: GoogleFonts.andika(
                                         fontSize: 40,
                                         fontWeight: FontWeight.w900,
-                                        color: Colors.white),
+                                        color: Colors.black),
                                     textAlign: TextAlign.center,
                                   ),
-                                  Text(
-                                    '1640 이상의 캐릭터만 참여 가능합니다.',
-                                    style: GoogleFonts.andika(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w900,
-                                        color: Colors.grey[300]),
-                                    textAlign: TextAlign.justify,
-                                    softWrap: true,
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(255, 209, 209, 209)
+                                          .withOpacity(0.5), // Add semi-transparent grey background
+                                      borderRadius: BorderRadius.circular(10), // Rounded corners
+                                    ),
+                                    padding:
+                                        const EdgeInsets.all(8.0), // Add padding for better spacing
+                                    child: Text(
+                                      '1640 이상의 4T 캐릭터만 참여 가능합니다.',
+                                      style: GoogleFonts.andika(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w900,
+                                          color: Colors.black),
+                                      textAlign: TextAlign.justify,
+                                      softWrap: true,
+                                    ),
                                   ),
                                   Container(
                                     color: Colors.white,

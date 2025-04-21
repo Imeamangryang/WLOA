@@ -28,6 +28,37 @@ const Map<String, List<String>> classList = {
   '환수사': ['환수 각성', '야성']
 };
 
+// 영문 alias ↔ 한글 컬렉션 이름 매핑
+const Map<String, String> jobCollections = {
+  "warlord": "워로드",
+  "berserker": "버서커",
+  "destroyer": "디스트로이어",
+  "paladin": "홀리나이트",
+  "slayer": "슬레이어",
+  "battlemaster": "배틀마스터",
+  "infighter": "인파이터",
+  "soulmaster": "기공사",
+  "lancer": "창술사",
+  "striker": "스트라이커",
+  "breaker": "브레이커",
+  "blaster": "블래스터",
+  "hawkeye": "호크아이",
+  "scouter": "스카우터",
+  "devilhunter": "데빌헌터",
+  "gunslinger": "건슬링어",
+  "summoner": "서머너",
+  "sorceress": "소서리스",
+  "arcana": "아르카나",
+  "bard": "바드",
+  "blade": "블레이드",
+  "reaper": "리퍼",
+  "souleater": "소울이터",
+  "demonic": "데모닉",
+  "weatherer": "기상술사",
+  "artist": "도화가",
+  "wildsoul": "환수사",
+};
+
 const Map<String, int> classindex = {
   '워로드': 0,
   '버서커': 1,
@@ -56,6 +87,19 @@ const Map<String, int> classindex = {
   '기상술사': 24,
   '도화가': 25,
   '환수사': 26,
+};
+
+const Map<String, int> raidlevel = {
+  '강습 하드': 1720, // 0
+  '3막 하드': 1700, // 1
+  '2막 하드': 1690, // 2
+  '1막 하드': 1680, // 3
+  '강습 노말': 1680, // 4
+  '3막 노말': 1680, // 5
+  '2막 노말': 1670, // 6
+  '1막 노말': 1660, // 7
+  '베히모스': 1640, // 8
+  '에키드나 하드': 1640, // 9
 };
 
 const Map<String, List<String>> skillList = {

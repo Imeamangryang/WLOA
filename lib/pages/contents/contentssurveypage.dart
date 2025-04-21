@@ -1,24 +1,22 @@
 // ignore_for_file: library_private_types_in_public_api
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide Step;
-import 'package:loapetition/constants/lostarkdata.dart';
 import 'package:loapetition/firestore/database.dart';
 import 'package:loapetition/firestore/datatypes.dart';
-import 'package:loapetition/pages/class/classsurvey.dart';
+import 'package:loapetition/pages/contents/contentssurvey.dart';
 import 'package:loapetition/widgets/layout.dart';
 import 'package:survey_kit/survey_kit.dart';
 
-class SurveyPage extends StatefulWidget {
-  final String className;
-  final String characterName;
+class ContentSurveyPage extends StatefulWidget {
+  final String raidName;
 
-  const SurveyPage({super.key, required this.className, required this.characterName});
+  const ContentSurveyPage({super.key, required this.raidName});
 
   @override
-  _SurveyPageState createState() => _SurveyPageState();
+  _ContentSurveyPageState createState() => _ContentSurveyPageState();
 }
 
-class _SurveyPageState extends State<SurveyPage> {
+class _ContentSurveyPageState extends State<ContentSurveyPage> {
   @override
   Widget build(BuildContext context) {
     return CustomLayout(
@@ -27,7 +25,7 @@ class _SurveyPageState extends State<SurveyPage> {
         child: Align(
           alignment: Alignment.center,
           child: FutureBuilder<Task>(
-            future: getSampleTask(widget.className),
+            future: getContentSurveyTask(widget.raidName),
             builder: (BuildContext context, AsyncSnapshot<Task> snapshot) {
               if (snapshot.connectionState == ConnectionState.done &&
                   snapshot.hasData &&
@@ -35,29 +33,12 @@ class _SurveyPageState extends State<SurveyPage> {
                 final Task task = snapshot.data!;
                 return SurveyKit(
                   onResult: (SurveyResult result) {
-                    CharacterData characterData = CharacterData(
-                      subclass: result.results[1].results[0].result.text,
-                      score: result.results[2].results[0].result,
-                      review: result.results[3].results[0].result.toString(),
-                    );
-                    FirestoreDatabase()
-                        .setData(
-                      collectionPath: jobCollections.entries
-                          .firstWhere((entry) => entry.value == widget.className)
-                          .key,
-                      documentId: widget.characterName,
-                      jsonData: characterData.toJson(),
-                    )
-                        .then((_) {
-                      // Handle successful data saving here
-                      print('Survey result saved successfully!');
-
-                      Navigator.of(context).pop();
-                    }).catchError((error) {
-                      // Handle error here
-                      print('Error saving survey result: $error');
-                      Navigator.of(context).pop();
-                    });
+                    // FirestoreDatabase()
+                    //     .setData(
+                    //   collectionPath: widget.className,
+                    //   documentId: widget.characterName,
+                    //   jsonData: characterData.toJson(),
+                    // )
                   },
                   task: task,
                   showProgress: true,
