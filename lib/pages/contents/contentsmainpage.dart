@@ -94,7 +94,7 @@ class _ContentsmainPageState extends State<ContentsmainPage> {
                       },
                       blendMode: BlendMode.dstIn,
                       child: Image.asset(
-                        'images/LOSTARK_wallpaper_3440x1440_Season3.jpg',
+                        'assets/images/LOSTARK_wallpaper_3440x1440_Season3.jpg',
                         filterQuality: FilterQuality.high,
                       )),
                   Center(
@@ -205,6 +205,7 @@ class _ContentsmainPageState extends State<ContentsmainPage> {
                               MaterialPageRoute(
                                 builder: (context) => ContentSurveyPage(
                                   raidName: raid,
+                                  characterName: _characterName,
                                 ),
                                 settings: RouteSettings(
                                   name: '/raidsurvey/${raidlevel.keys.toList().indexOf(raid)}',
@@ -271,7 +272,7 @@ class _ContentsmainPageState extends State<ContentsmainPage> {
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
                                       image: AssetImage(
-                                          'images/raid${raidlevel.keys.toList().indexOf(raid)}.jpg'),
+                                          'assets/images/raid${raidlevel.keys.toList().indexOf(raid)}.jpg'),
                                       fit: BoxFit.cover,
                                       alignment: Alignment.topCenter, // Align the image to the top
                                     ),

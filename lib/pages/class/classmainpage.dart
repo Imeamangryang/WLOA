@@ -81,7 +81,7 @@ class _classmainPageState extends State<classmainPage> {
                       },
                       blendMode: BlendMode.dstIn,
                       child: Image.asset(
-                        'images/LOSTARK_wallpaper_3440x1440_Limlake.jpg',
+                        'assets/images/LOSTARK_wallpaper_3440x1440_Limlake.jpg',
                         filterQuality: FilterQuality.high,
                       )),
                   Center(
@@ -264,7 +264,7 @@ class _classmainPageState extends State<classmainPage> {
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
                                         image: AssetImage(
-                                            'images/class${classindex[character['CharacterClassName']]}.jpg'),
+                                            'assets/images/class${classindex[character['CharacterClassName']]}.jpg'),
                                         fit: BoxFit.cover,
                                         alignment:
                                             Alignment.topCenter, // Align the image to the top

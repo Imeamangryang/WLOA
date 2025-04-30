@@ -2,15 +2,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide Step;
 import 'package:loapetition/firestore/database.dart';
-import 'package:loapetition/firestore/datatypes.dart';
 import 'package:loapetition/pages/contents/contentssurvey.dart';
 import 'package:loapetition/widgets/layout.dart';
 import 'package:survey_kit/survey_kit.dart';
 
 class ContentSurveyPage extends StatefulWidget {
   final String raidName;
+  final String characterName;
 
-  const ContentSurveyPage({super.key, required this.raidName});
+  const ContentSurveyPage({super.key, required this.raidName, required this.characterName});
 
   @override
   _ContentSurveyPageState createState() => _ContentSurveyPageState();
@@ -39,6 +39,23 @@ class _ContentSurveyPageState extends State<ContentSurveyPage> {
                     //   documentId: widget.characterName,
                     //   jsonData: characterData.toJson(),
                     // )
+
+                    FirestoreDatabase()
+                        .setData(
+                      collectionPath: widget.raidName,
+                      documentId: widget.characterName,
+                      jsonData: result.toJson(),
+                    )
+                        .then((_) {
+                      // Handle successful data saving here
+                      print('Survey result saved successfully!');
+
+                      Navigator.of(context).pop();
+                    }).catchError((error) {
+                      // Handle error here
+                      print('Error saving survey result: $error');
+                      Navigator.of(context).pop();
+                    });
                   },
                   task: task,
                   showProgress: true,

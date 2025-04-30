@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'images/Bg_RaidMain.jpg',
+              'assets/images/Bg_RaidMain.jpg',
               fit: BoxFit.cover,
             ),
           ),
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
             left: -MediaQuery.of(context).size.width * 0.25,
             top: MediaQuery.of(context).size.height * 0.3,
             child: Image.asset(
-              'images/NPC2.png',
+              'assets/images/NPC2.png',
               width: MediaQuery.of(context).size.width * 0.7,
               height: MediaQuery.of(context).size.height * 0.7,
             ),
