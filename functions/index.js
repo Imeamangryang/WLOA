@@ -1,8 +1,8 @@
 const {onDocumentWritten} = require("firebase-functions/v2/firestore");
-const {onRequest} = require("firebase-functions/v2/https");
 const {initializeApp} = require("firebase-admin/app");
 const {getFirestore, FieldValue} = require("firebase-admin/firestore");
-const cors = require("cors")({origin: true}); // ⭐ CORS 설정
+const {onCall} = require("firebase-functions/v2/https");
+const functions = require("firebase-functions");
 
 initializeApp();
 const db = getFirestore();
@@ -84,33 +84,28 @@ async function updateAverageForJob(collectionName) {
   }
 }
 
-// ⭐ CORS 처리된 getRandomReviewsV2 함수
-exports.getRandomReviewsV2 = onRequest((req, res) => {
-  cors(req, res, async () => {
-    try {
-      const collectionName = req.query.collectionName;
-      const numberOfReviews = parseInt(req.query.count || "5", 10);
+exports.getRandomReviewsV2 = onCall(async (req) => {
+  const collectionName = req.data.collectionName;
+  const numberOfReviews = parseInt(req.data.count || "5", 10);
 
-      if (!collectionName) {
-        res.status(400).send("Missing 'collectionName' query parameter.");
-        return;
-      }
+  if (!collectionName) {
+    throw new functions.https.HttpsError("invalid-argument", "Missing 'collectionName'");
+  }
 
-      const snapshot = await db.collection(collectionName).get();
-      const allReviews = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+  try {
+    const snapshot = await db.collection(collectionName).get();
+    const allReviews = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
 
-      if (allReviews.length === 0) {
-        res.status(200).json([]);
-        return;
-      }
-
-      const shuffledReviews = allReviews.sort(() => 0.5 - Math.random());
-      const selectedReviews = shuffledReviews.slice(0, numberOfReviews);
-
-      res.status(200).json(selectedReviews);
-    } catch (error) {
-      console.error("리뷰를 가져오는 중 오류 발생:", error);
-      res.status(500).send("리뷰를 가져오는 데 실패했습니다.");
+    if (allReviews.length === 0) {
+      return []; // 리뷰가 없으면 빈 배열 반환
     }
-  });
+
+    // 무작위로 리뷰 선택
+    const shuffledReviews = allReviews.sort(() => 0.5 - Math.random());
+    const selectedReviews = shuffledReviews.slice(0, numberOfReviews);
+
+    return selectedReviews;
+  } catch (error) {
+    throw new functions.https.HttpsError("internal", "리뷰를 가져오는 데 실패했습니다.", error);
+  }
 });

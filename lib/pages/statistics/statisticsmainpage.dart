@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
@@ -69,10 +67,10 @@ class _StatisticsmainPageState extends State<StatisticsmainPage> {
     }
   }
 
-  List<Map<String, dynamic>> _reviews = [];
+  List<String> _reviews = [];
   String _error = '';
 
-  Future<void> _fetchRandomReviews() async {
+  Future<void> _fetchRandomReviews(String className) async {
     setState(() {
       _reviews = [];
       _error = '';
@@ -81,14 +79,16 @@ class _StatisticsmainPageState extends State<StatisticsmainPage> {
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('getRandomReviewsV2');
       final result = await callable.call(<String, dynamic>{
-        'collectionName': 'hawkeye', // 실제 컬렉션 이름으로 변경하세요.
+        'collectionName': className, // 실제 컬렉션 이름으로 변경하세요.
         'count': 3, // 가져올 리뷰 개수를 원하는 대로 설정하세요.
       });
 
       final List<dynamic> data = result.data as List<dynamic>;
-      print('Cloud Function 호출 결과: $data');
       setState(() {
-        _reviews = data.cast<Map<String, dynamic>>();
+        _reviews = data
+            .where((item) => item is Map<String, dynamic> && item.containsKey('review'))
+            .map((item) => item['review'] as String)
+            .toList();
       });
     } catch (e) {
       setState(() {
@@ -143,7 +143,9 @@ class _StatisticsmainPageState extends State<StatisticsmainPage> {
                               .firstWhere((entry) => entry.value == _jobData[groupIndex][index])
                               .key); // subclass별 평균 점수 계산 및 리뷰 로드
 
-                          _fetchRandomReviews(); // 리뷰 가져오기
+                          _fetchRandomReviews(jobCollections.entries
+                              .firstWhere((entry) => entry.value == _jobData[groupIndex][index])
+                              .key); // 리뷰 가져오기
                           // 선택된 직업에 대한 추가 동작 구현 (예: 다음 화면으로 이동)
                         },
                         style: ElevatedButton.styleFrom(
@@ -300,49 +302,5 @@ class _StatisticsmainPageState extends State<StatisticsmainPage> {
         ),
       ),
     );
-  }
-}
-
-Future<Map<String, Map<String, dynamic>>> calculateAverageScore(String className) async {
-  try {
-    // 선택된 직업(className)에 해당하는 컬렉션의 모든 문서 스냅샷 가져오기
-    QuerySnapshot<Map<String, dynamic>> querySnapshot =
-        await FirebaseFirestore.instance.collection(className).get();
-
-    // subclass 별로 score 값과 참여자 수를 저장할 맵
-    Map<String, List<int>> subclassScores = {};
-
-    // 각 문서에서 subclass와 score 값을 추출하여 맵에 추가
-    for (QueryDocumentSnapshot<Map<String, dynamic>> document in querySnapshot.docs) {
-      Map<String, dynamic> data = document.data();
-      if (data.containsKey('subclass') && data.containsKey('score') && data['score'] is num) {
-        String subclass = data['subclass'];
-        int score = (data['score'] as num).toInt();
-
-        // 해당 subclass의 리스트에 score 추가
-        if (!subclassScores.containsKey(subclass)) {
-          subclassScores[subclass] = [];
-        }
-        subclassScores[subclass]!.add(score);
-      } else {
-        print("경고: 문서 ID ${document.id}에 'subclass' 또는 'score' 필드가 없거나 유효하지 않습니다.");
-      }
-    }
-
-    // subclass 별 평균 점수와 참여자 수를 계산
-    Map<String, Map<String, dynamic>> subclassStats = {};
-    subclassScores.forEach((subclass, scores) {
-      if (scores.isNotEmpty) {
-        double average = scores.reduce((a, b) => a + b) / scores.length;
-        subclassStats[subclass] = {'average': average, 'count': scores.length};
-      } else {
-        subclassStats[subclass] = {'average': 0.0, 'count': 0};
-      }
-    });
-
-    return subclassStats;
-  } catch (e) {
-    print("오류 발생: $e");
-    return {}; // 오류 발생 시 빈 맵 반환
   }
 }
