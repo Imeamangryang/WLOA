@@ -1,11 +1,11 @@
 {
-    "name": "loapetition",
-    "short_name": "loapetition",
+    "name": "WLOA",
+    "short_name": "WLOA",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "WLOA - 로스트아크 설문조사",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
