@@ -1,6 +1,6 @@
-# loapetition
+# WLOA
 
-A new Flutter project.
+로스트아크에 대한 설문 사이트
 
 ## Getting Started
 
